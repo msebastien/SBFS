@@ -100,10 +100,12 @@ public class Service implements Runnable{
         ByteBuffer bb = ByteBuffer.wrap(bytesReceived);
         switch(request){
             case GET:
+                // File name
                 int fileNameLength = bb.getInt();
                 byte[] fileName = new byte[fileNameLength];
                 bb = bb.get(fileName);
 
+                // Retrieve client public key
                 byte[] pubKeyBytes = new byte[bb.remaining()];
                 bb.get(pubKeyBytes);
 
@@ -113,6 +115,7 @@ public class Service implements Runnable{
                 KeyFactory factory = KeyFactory.getInstance("RSA");
                 PublicKey clientPubKey = factory.generatePublic(pkSpec);
 
+                // Encrypt file with public key and send it to client if it exists in ServerData/upload/
                 File file = new File(Server.SERVER_UPLOAD_PATH + new String(fileName));
                 if(file.exists() && !file.isDirectory()){
                     File encFile = new File(Utilities.getEncryptedFilePath(file));
@@ -132,13 +135,16 @@ public class Service implements Runnable{
                 }
                 break;
             case SEND:
+                // File name
                 int fNameLength = bb.getInt();
                 byte[] fName = new byte[fNameLength];
                 bb = bb.get(fName);
 
+                // Checksum
                 byte[] checksum = new byte[32]; // SHA-256
                 bb = bb.get(checksum);
 
+                // Retrieve encrypted file bytes and write it to ServerData/download/
                 byte[] encFileBytes = new byte[bb.remaining()];
                 bb.get(encFileBytes);
                 Utilities.writeFile(encFileBytes, Server.SERVER_DOWNLOAD_PATH + new String(fName));
