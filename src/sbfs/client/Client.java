@@ -26,7 +26,7 @@ import javax.crypto.SecretKey;
 
 public class Client {
     private Socket sock;
-    private Sfbs app;
+    private Sbfs app;
 
     static int RSA_KEYS_SIZE = 2048;
     static String CLIENT_PATH = "ClientData";
@@ -34,7 +34,7 @@ public class Client {
     static String KEYS_PATH = CLIENT_PATH + "/keys";
     static int TRY_COUNT = 3;
 
-    public Client(Sfbs app) throws IOException {
+    public Client(Sbfs app) throws IOException {
         this.app = app;
         this.sock = new Socket(); // Create a socket
         InetAddress addr = InetAddress.getByName(app.strServer); // Determines the IP Address of a host, given the host's name
