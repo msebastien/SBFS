@@ -1,5 +1,5 @@
 /*
- * App class : handles command line arguments and client instanciation
+ * Main class : handles command line arguments and client instanciation
  * Author: Sébastien Maes
  */
 package sbfs.client;
@@ -19,7 +19,7 @@ import java.security.spec.InvalidKeySpecException;
 @CommandLine.Command(name = "sbfs", footer = "Copyright(c) 2019 Sébastien Maes",
         description = "Secure Basic File Sharer (SBFS) allows to easily get/send encrypted FILEs, " +
                 "using AES-256 and RSA-2048 to respectively cipher the file and the secret key, from/to a host (aka a server)")
-public class App {
+public class Sfbs {
     @CommandLine.Parameters(index = "0", paramLabel = "MODE", description = "The mode in which the program will operate (send/get).", arity = "1")
     public String mode;
 
@@ -35,7 +35,7 @@ public class App {
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
-        App app = new App();
+        Sfbs app = new Sfbs();
         CommandLine cl = new CommandLine(app);
         cl.parseArgs(args);
 
