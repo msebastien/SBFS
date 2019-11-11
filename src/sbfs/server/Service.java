@@ -122,7 +122,7 @@ public class Service implements Runnable{
                     SecretKey sk = Crypto.generateSecretKey();
                     Crypto.encryptFile(file, sk);
 
-                    // Encrypt secret key with public key from server
+                    // Encrypt secret key with public key from client
                     byte[] encryptedKey = Crypto.encryptSecretKey(sk, clientPubKey);
                     Crypto.addKeyToFile(encFile, encryptedKey);
 

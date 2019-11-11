@@ -236,7 +236,7 @@ public class Client {
                 count++;
             } else if(app.mode.equalsIgnoreCase("send")){
                 reqType = RequestType.SEND;
-                sendRequest(RequestType.SEND);
+                sendRequest(reqType);
                 response = getResponseType();
                 count++;
             } else {
