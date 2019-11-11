@@ -21,10 +21,10 @@ public class Server implements Runnable {
     // Init server
     public void serve() {
         try {
-            sockSvr = new ServerSocket(1555); // 1 instance de ServerSocket / Crée une instance de Socket pour chaque client
+            sockSvr = new ServerSocket(1555); // ServerSocket instance => a Socket instance is created for each connected client
             System.out.println("Press Enter to quit.");
-            Thread thr = new Thread(this); // Thread attend une classe implémentant Runnable dans son constructeur
-            thr.start(); // démarre le thread
+            Thread thr = new Thread(this);
+            thr.start(); // Starts server thread
             System.in.read();
             sockSvr.close();
         } catch(IOException e){
@@ -37,9 +37,9 @@ public class Server implements Runnable {
     public void run() {
         try{
             while(true) {
-                Socket sock = sockSvr.accept(); // Ecoute sur le port pour qu'une connexion s'établisse (Bloquante)
+                Socket sock = sockSvr.accept(); // Listens on the port waiting for a connection to be made with a client. (Blocking)
                 Service service = new Service(sock);
-                Thread thr = new Thread(service); // Gère les opérations de lecture/écriture sur le socket
+                Thread thr = new Thread(service); // Manage I/O operations on the socket
                 thr.start();
             }
         } catch(IOException e){

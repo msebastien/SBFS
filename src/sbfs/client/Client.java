@@ -31,7 +31,7 @@ public class Client {
 
     public Client(App app) throws IOException {
         InetAddress addr = InetAddress.getByName(app.strServer); // Determines the IP Address of a host, given the host's name
-        this.sock = new Socket(app.strServer, 1555); // Create a socket to the port 5555 on the host machine
+        this.sock = new Socket(app.strServer, 1555); // Create a socket to the port on the host machine
         this.app = app;
     }
 

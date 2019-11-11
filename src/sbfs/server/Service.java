@@ -61,7 +61,7 @@ public class Service implements Runnable{
         if(is.read(bytes) >= 4){
             // Checks if it's a valid response code
             RequestType res = RequestType.from(ByteBuffer.wrap(bytes).getInt());
-            if(res == RequestType.GET || res == RequestType.SEND|| res == RequestType.GET_PUBLIC_KEY){
+            if(res == RequestType.GET || res == RequestType.SEND || res == RequestType.GET_PUBLIC_KEY){
                 ret = res.getValue();
             }
         }
