@@ -1,3 +1,7 @@
+/*
+ * All of response types available
+ * Author: Sébastien Maes
+ */
 package sbfs.server;
 
 import java.util.HashMap;

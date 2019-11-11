@@ -1,3 +1,7 @@
+/*
+ * Crypto : necessary functions to ensure proper file encryption and decryption
+ * Author: Sébastien Maes
+ */
 package sbfs;
 
 import javax.crypto.*;
@@ -14,6 +18,10 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class Crypto {
 
+    /**
+     * Generate a private and a public key (RSA).
+     * @param path Path to Directory that will contain keys
+     */
     public static void generateKeyPair(String path, int keySize) throws NoSuchAlgorithmException, IOException {
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
             kpg.initialize(keySize, new SecureRandom());
@@ -23,6 +31,11 @@ public class Crypto {
             Utilities.writeFile(kp.getPublic().getEncoded(), path + "/public.key");
     }
 
+    /**
+     * Load a private and a public key from a directory (RSA).
+     * @param path Path to Directory that contains keys
+     * @return keypair
+     */
     public static KeyPair loadKeyPair(String path) throws NoSuchAlgorithmException, IOException,
             InvalidKeySpecException {
         // Read public and private key
@@ -36,12 +49,22 @@ public class Crypto {
         return new KeyPair(pk, sk);
     }
 
+    /**
+     * Generate an AES-256 secret key.
+     * @return secretkey
+     */
     public static SecretKey generateSecretKey() throws NoSuchAlgorithmException{
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256, new SecureRandom());
         return keyGen.generateKey();
     }
 
+    /**
+     * Encrypt an AES secret key with a RSA public key.
+     * @param skToEncrypt The secret key to encrypt
+     * @param publicKey RSA public key
+     * @return encrypted secret key byte array
+     */
     public static byte[] encryptSecretKey(SecretKey skToEncrypt, PublicKey publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, IllegalBlockSizeException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -49,6 +72,12 @@ public class Crypto {
         return cipher.wrap(skToEncrypt);
     }
 
+    /**
+     * Decrypt an AES secret key with a RSA private key.
+     * @param encryptedKey The secret key to decrypt
+     * @param privateKey RSA private key
+     * @return decrypted secret key
+     */
     public static SecretKey decryptSecretKey(byte[] encryptedKey, PrivateKey privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException,
     InvalidKeyException {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
@@ -56,6 +85,11 @@ public class Crypto {
         return (SecretKey) cipher.unwrap(encryptedKey, "AES", Cipher.SECRET_KEY);
     }
 
+    /**
+     * Encrypt a file using an AES secret key.
+     * @param file The file to encrypt
+     * @param sk AES Secret key
+     */
     public static void encryptFile(File file, SecretKey sk) throws NoSuchAlgorithmException, NoSuchPaddingException,
             InvalidKeyException, InvalidAlgorithmParameterException, IOException {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
@@ -84,6 +118,11 @@ public class Crypto {
         fis.close();
     }
 
+    /**
+     * Add an encrypted AES secret key at the beginning of a file
+     * @param file File
+     * @param encryptedKey encrypted AES key
+     */
     public static void addKeyToFile(File file, byte[] encryptedKey) throws IOException {
         byte[] fileBytes = Files.readAllBytes(file.toPath());
         byte[] byteArray = new byte[encryptedKey.length + fileBytes.length];
@@ -92,6 +131,11 @@ public class Crypto {
         Utilities.writeFile(bb.array(), file.getPath());
     }
 
+    /**
+     * Decrypt a file using an RSA private key.
+     * @param file The file to decrypt
+     * @param privateKey RSA private key
+     */
     public static void decryptFile(File file, PrivateKey privateKey) throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException,
             IllegalBlockSizeException, BadPaddingException{
@@ -124,6 +168,4 @@ public class Crypto {
         osw.write(new String(decryptedData));
         osw.close();
     }
-
-
 }

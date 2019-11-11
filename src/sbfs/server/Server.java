@@ -1,3 +1,7 @@
+/*
+ * Server class responsible for creating services (server instances) to communicate with multiple clients simultaneously
+ * Author: Sébastien Maes
+ */
 package sbfs.server;
 
 import sbfs.Crypto;
@@ -18,7 +22,9 @@ public class Server implements Runnable {
     static String SERVER_UPLOAD_PATH = SERVER_PATH + "/upload/";
     static String KEYS_PATH = SERVER_PATH + "/keys";
 
-    // Init server
+    /**
+     * Initialize server
+     */
     public void serve() {
         try {
             sockSvr = new ServerSocket(1555); // ServerSocket instance => a Socket instance is created for each connected client
@@ -33,6 +39,9 @@ public class Server implements Runnable {
 
     }
 
+    /**
+     * Server thread
+     */
     @Override
     public void run() {
         try{

@@ -1,3 +1,7 @@
+/*
+ * Various useful functions
+ * Author: Sébastien Maes
+ */
 package sbfs;
 
 import java.io.*;

@@ -1,3 +1,7 @@
+/*
+ * App class : handles command line arguments and client instanciation
+ * Author: Sébastien Maes
+ */
 package sbfs.client;
 
 import picocli.CommandLine;

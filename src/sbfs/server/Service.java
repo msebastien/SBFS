@@ -1,3 +1,7 @@
+/*
+ * Service class managing I/O operations on socket. Handles request and send responses to a client.
+ * Author: Sébastien Maes
+ */
 package sbfs.server;
 
 import java.io.*;
@@ -27,17 +31,20 @@ public class Service implements Runnable{
         this.sock = sock;
     }
 
+    /**
+     * Service (server instance) thread
+     */
     @Override
     public void run() {
         try{
-            routine();
-
+            while(sock.isConnected()){
+                routine();
+            }
+            Utilities.LOG(LogType.SERVER, "Service Routine ended SUCCESSFULLY.");
         } catch(IOException e){
-            System.err.println("Socket is not connected.");
-            System.exit(1);
+            System.err.println("Client has disconnected.");
         } catch(NoSuchAlgorithmException e){
             System.err.println("This algorithm does not exist.");
-            System.exit(1);
         } catch(NoSuchPaddingException e){
             System.err.println(e.getMessage());
         } catch(InvalidKeySpecException e){
@@ -51,9 +58,12 @@ public class Service implements Runnable{
         } catch(BadPaddingException e){
             System.err.println("Bad Padding : " + e.getMessage());
         }
-
     }
 
+    /**
+     * Get received request type
+     * @return response code
+     */
     private int getRequestType() throws IOException {
         InputStream is = sock.getInputStream();
         byte[] bytes = new byte[4];
@@ -68,7 +78,10 @@ public class Service implements Runnable{
         return ret;
     }
 
-    // Manage and process request
+    /**
+     * Handle and process requests
+     * @param reqNum request code
+     */
     public void handleRequest(int reqNum) throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
@@ -78,7 +91,9 @@ public class Service implements Runnable{
         // Frame
         int frameLength = dis.readInt();
         byte[] bytesReceived = new byte[frameLength];
-        dis.readFully(bytesReceived);
+        if(frameLength > 0){
+            dis.read(bytesReceived);
+        }
 
         Utilities.LOG(LogType.SERVER, "Bytes Received from " + sock.getInetAddress() + ": " + bytesReceived.length);
 
@@ -145,12 +160,18 @@ public class Service implements Runnable{
                 sendResponse(ResponseType.OK, request, null);
                 break;
             default:
-                System.out.println("Unknown request received from " + sock.getInetAddress());
+                Utilities.LOG(LogType.SERVER, "Unknown request received from " + sock.getInetAddress());
                 sendResponse(ResponseType.NOT_RECEIVED, request, null);
                 break;
         }
     }
 
+    /**
+     * Send response to client
+     * @param res Response type
+     * @param requestReceived received request type
+     * @param file file to send (not mandatory)
+     */
     public void sendResponse(ResponseType res, RequestType requestReceived, File file) throws IOException, NoSuchAlgorithmException,
             InvalidKeySpecException {
         OutputStream os = sock.getOutputStream();
@@ -211,12 +232,14 @@ public class Service implements Runnable{
 
     }
 
+    /**
+     * Server routine / logic
+     */
     public void routine() throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException{
         int reqType = getRequestType();
         Utilities.LOG(LogType.SERVER, "Type of Request received : " + RequestType.from(reqType).toString());
         handleRequest(reqType);
-        Utilities.LOG(LogType.SERVER, "Service Routine ended SUCCESSFULLY.");
     }
 }

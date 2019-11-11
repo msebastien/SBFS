@@ -1,10 +1,14 @@
+/*
+ * All of request types available
+ * Author: Sébastien Maes
+ */
 package sbfs.client;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public enum RequestType {
-    GET(0), SEND(1), GET_PUBLIC_KEY(2), NONE(3);
+    GET(0), SEND(1), GET_PUBLIC_KEY(2), NONE(-1);
 
     private final int value;
     RequestType(int value) {

@@ -1,3 +1,7 @@
+/*
+ * All of Logging types available
+ * Author: Sébastien Maes
+ */
 package sbfs;
 
 import java.util.HashMap;

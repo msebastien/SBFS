@@ -1,3 +1,7 @@
+/*
+ * Client class that allows to communicate with a server. Send requests and handles server responses.
+ * Author: Sébastien Maes
+ */
 package sbfs.client;
 
 import sbfs.server.ResponseType;
@@ -5,6 +9,7 @@ import sbfs.*;
 
 import java.io.*;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -30,11 +35,16 @@ public class Client {
     static int TRY_COUNT = 3;
 
     public Client(App app) throws IOException {
-        InetAddress addr = InetAddress.getByName(app.strServer); // Determines the IP Address of a host, given the host's name
-        this.sock = new Socket(app.strServer, 1555); // Create a socket to the port on the host machine
         this.app = app;
+        this.sock = new Socket(); // Create a socket
+        InetAddress addr = InetAddress.getByName(app.strServer); // Determines the IP Address of a host, given the host's name
+        sock.connect(new InetSocketAddress(addr, 1555), 3000);
+        sock.setSoTimeout(3000);
     }
 
+    /**
+     * Send request and handle response to get server's public key
+     */
     private void getPublicKey() throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException{
@@ -45,6 +55,9 @@ public class Client {
         handleResponse(response, execRequest);
     }
 
+    /**
+     * Get the received response type
+     */
     private int getResponseType() throws IOException {
         DataInputStream dis = new DataInputStream(sock.getInputStream());
         byte[] bytes = new byte[4];
@@ -59,6 +72,10 @@ public class Client {
         return ret;
     }
 
+    /**
+     * Send a type of request to the server
+     * @param req The type of request to send (enum)
+     */
     private void sendRequest(RequestType req) throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
@@ -127,6 +144,11 @@ public class Client {
         }
     }
 
+    /**
+     * Handle a response to a request.
+     * @param res Type of response received
+     * @param executedRequest Previously executed request
+     */
     private void handleResponse(int res, RequestType executedRequest) throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeySpecException, InvalidKeyException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
@@ -136,7 +158,9 @@ public class Client {
         // Frame
         int frameLength = dis.readInt();
         byte[] bytesReceived = new byte[frameLength];
-        dis.readFully(bytesReceived);
+        if(frameLength > 0){
+            dis.read(bytesReceived);
+        }
 
         Utilities.LOG(LogType.CLIENT, "Bytes received from server. Size= " + bytesReceived.length);
 
@@ -193,6 +217,9 @@ public class Client {
         }
     }
 
+    /**
+     * Client routine / logic
+     */
     public void routine() throws IOException, NoSuchAlgorithmException,
             NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException{
