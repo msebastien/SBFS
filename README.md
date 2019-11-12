@@ -10,4 +10,4 @@ Usage: sbfs [-h] -f=<file> MODE HOST
                         to the file to send
   -h, --help          Display this help and exit
 ```
-Copyright (c) 2019 Sébastien Maes
+Licensed under the MIT License. Copyright (c) 2019 Sébastien Maes
