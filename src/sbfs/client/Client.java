@@ -28,11 +28,11 @@ public class Client {
     private Socket sock;
     private Sbfs app;
 
-    static int RSA_KEYS_SIZE = 2048;
-    static String CLIENT_PATH = "ClientData";
-    static String CLIENT_DOWNLOAD_PATH = CLIENT_PATH + "/download/";
-    static String KEYS_PATH = CLIENT_PATH + "/keys";
-    static int TRY_COUNT = 3;
+    final static int RSA_KEYS_SIZE = 2048;
+    final static String CLIENT_PATH = "ClientData";
+    final static String CLIENT_DOWNLOAD_PATH = CLIENT_PATH + "/download/";
+    final static String KEYS_PATH = CLIENT_PATH + "/keys";
+    final static int TRY_COUNT = 3;
 
     public Client(Sbfs app) throws IOException {
         this.app = app;
@@ -227,23 +227,20 @@ public class Client {
         Files.createDirectories(Paths.get(CLIENT_DOWNLOAD_PATH));
 
         int response = -1, count = 0;
-        RequestType reqType = RequestType.NONE;
         do {
             if(app.mode.equalsIgnoreCase("get")){
-                reqType = RequestType.GET;
-                sendRequest(reqType);
-                response = getResponseType();
+                sendRequest(RequestType.GET);
+                handleResponse(getResponseType(), reqType);
                 count++;
             } else if(app.mode.equalsIgnoreCase("send")){
-                reqType = RequestType.SEND;
-                sendRequest(reqType);
-                response = getResponseType();
+                sendRequest(RequestType.SEND);
+                handleResponse(getResponseType(), reqType);
                 count++;
             } else {
                 System.err.println(app.mode + " is not a valid mode. Please choose GET or SEND");
                 System.exit(1);
             }
-            handleResponse(response, reqType);
+            
         } while((response == -1 || ResponseType.from(response) != ResponseType.OK) && count < TRY_COUNT);
 
         sock.close();
