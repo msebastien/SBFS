@@ -229,12 +229,18 @@ public class Client {
         int response = -1, count = 0;
         do {
             if(app.mode.equalsIgnoreCase("get")){
-                sendRequest(RequestType.GET);
-                handleResponse(getResponseType(), reqType);
+                RequestType reqType = RequestType.GET;
+                sendRequest(reqType);
+
+                response = getResponseType();
+                handleResponse(response, reqType);
                 count++;
             } else if(app.mode.equalsIgnoreCase("send")){
-                sendRequest(RequestType.SEND);
-                handleResponse(getResponseType(), reqType);
+                RequestType reqType = RequestType.SEND;
+                sendRequest(reqType);
+
+                response = getResponseType();
+                handleResponse(response, reqType);
                 count++;
             } else {
                 System.err.println(app.mode + " is not a valid mode. Please choose GET or SEND");
